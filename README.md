@@ -1,9 +1,4 @@
-"""
-Authors: Tim Hessels
-Contact: timhessels@hotmail.com
-Repository: https://github.com/TimHessels/WaporAPI
-Module: WaporAPI
-
+# WAPOR API
 Description:
 This tool collects FAO's WAPOR data of LEVEL 1 and LEVEL 2 (excluding the seasonal paramters). The output will be tiff files and no conversions is 
 preformed to the units. The output are in the same units as on the WAPOR Portal (https://wapor.apps.fao.org/home/1)
@@ -27,9 +22,7 @@ WaporAPI.Collect.VariablesInfo.descriptions
 Examples:
 import WaporAPI
 WaporAPI.Collect.WAPOR(r"G:\Project_MetaMeta\Input_Data2", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
-"""
 
-from .Collect import WAPOR as WAPOR
 
-__all__ = ['WAPOR']
-__version__ = '0.0.0'
+
+

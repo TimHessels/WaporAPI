@@ -222,7 +222,7 @@ class VariablesInfo:
              'L1_PCP_E': 'Precipitation (Daily)',
              'L1_QUAL_NDVI_D': 'Quality of Normalized Difference Vegetation Index (Dekadal)',
              'L1_QUAL_LST_D': 'Quality Land Surface Temperature (Dekadal)',
-             'L2_GBWP_S': 'Gross Biomass Water Productivity (Seasonal)',
+              # 'L2_GBWP_S': 'Gross Biomass Water Productivity (Seasonal)',
              'L2_AETI_A': 'Actual EvapoTranspiration and Interception (Annual)',
              'L2_AETI_M': 'Actual EvapoTranspiration and Interception (Monthly)',
              'L2_AETI_D': 'Actual EvapoTranspiration and Interception (Dekadal)',
@@ -233,9 +233,9 @@ class VariablesInfo:
              'L2_E_D': 'Evaporation (Dekadal)',
              'L2_I_D': 'Interception (Dekadal)',
              'L2_NPP_D': 'Net Primary Production',
-             'L2_TBP_S': 'Total Biomass Production (Seasonal)',
+              #'L2_TBP_S': 'Total Biomass Production (Seasonal)',
              'L2_LCC_A': 'Land Cover Classification',
-             'L2_PHE_S': 'Phenology (Seasonal)',
+              #'L2_PHE_S': 'Phenology (Seasonal)',
              'L2_QUAL_NDVI_D': 'Quality of Normalized Difference Vegetation Index (Dekadal)',
              'L2_QUAL_LST_D': 'Quality Land Surface Temperature (Dekadal)'}
     
@@ -263,7 +263,7 @@ class VariablesInfo:
              'L1_PCP_E': 'WATER_MM',
              'L1_QUAL_NDVI_D': 'N_DAYS',
              'L1_QUAL_LST_D': 'N_DAYS',
-             'L2_GBWP_S': 'WPR',
+              # 'L2_GBWP_S': 'WPR',
              'L2_AETI_A': 'WATER_MM',
              'L2_AETI_M': 'WATER_MM',
              'L2_AETI_D': 'WATER_MM',
@@ -274,9 +274,9 @@ class VariablesInfo:
              'L2_E_D': 'WATER_MM',
              'L2_I_D': 'WATER_MM',
              'L2_NPP_D': 'NPP',
-             'L2_TBP_S': 'LPR',
+              # 'L2_TBP_S': 'LPR',
              'L2_LCC_A': 'LCC',
-             'L2_PHE_S': 'PHE',
+              # 'L2_PHE_S': 'PHE',
              'L2_QUAL_NDVI_D': 'N_DAYS',
              'L2_QUAL_LST_D': 'N_DAYS'}
     
@@ -304,7 +304,7 @@ class VariablesInfo:
              'L1_PCP_E': 'DAY',
              'L1_QUAL_NDVI_D': 'DEKAD',
              'L1_QUAL_LST_D': 'DEKAD',
-             'L2_GBWP_S': 'SEASON',
+              # 'L2_GBWP_S': 'SEASON',
              'L2_AETI_A': 'YEAR',
              'L2_AETI_M': 'MONTH',
              'L2_AETI_D': 'DEKAD',
@@ -315,9 +315,9 @@ class VariablesInfo:
              'L2_E_D': 'DEKAD',
              'L2_I_D': 'DEKAD',
              'L2_NPP_D': 'DEKAD',
-             'L2_TBP_S': 'SEASON',
+              # 'L2_TBP_S': 'SEASON',
              'L2_LCC_A': 'YEAR',
-             'L2_PHE_S': 'SEASON',
+              # 'L2_PHE_S': 'SEASON',
              'L2_QUAL_NDVI_D': 'DEKAD',
              'L2_QUAL_LST_D': 'DEKAD'}
 
