@@ -24,7 +24,7 @@ WaporAPI.Collect.VariablesInfo.descriptions
 
 import WaporAPI
 
-WaporAPI.Collect.WAPOR(r"G:\...\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
+WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
 
 
 
