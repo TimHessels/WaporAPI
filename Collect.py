@@ -58,6 +58,10 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
     measure = VariablesInfo.measures[Parameter]
     dimension = VariablesInfo.dimensions[Parameter]
     version = VariablesInfo.versions[Version]
+
+    output_folder_para =  os.path.join(output_folder, Parameter) 
+    if not os.path.exists(output_folder_para):
+        os.makedirs(output_folder_para)
     
     # Loop over the dates
     for Date_end in Dates_end:
@@ -90,43 +94,45 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
             End_day_payload = 1
             End_month_payload = 1
             End_year_payload = Date_end.year + 1        
-        
-        # Create payload file
-        payload = Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure)
 
-        # Collect the date by using the payload file
-        response = requests.post(url, data=json.dumps(payload), headers=header)
-        response.raise_for_status()  
-        
-        response_json = response.json()
-        result = response_json['response']
-        
-        job_url = result['links'][0]['href']
-        output_folder_para =  os.path.join(output_folder, Parameter) 
-        if not os.path.exists(output_folder_para):
-            os.makedirs(output_folder_para)
-        
-        # output filename
         file_name_temp = os.path.join(output_folder_para, "%s_WAPOR_%s_%s.%02d.%02d.tif" %(Parameter, dimension, Date_end.year, Date_end.month, Start_day_payload))
-        
-        time.sleep(3)   
-        job_response = requests.get(job_url, headers=header)
-        time.sleep(3)
-        if job_response.status_code == 200:
-            attempts = 1
-            while (not os.path.exists(file_name_temp) and attempts < 20):
-                try:                   
-                    job_result = job_response.json()['response']['output']['downloadUrl']
-                    urllib.request.urlretrieve(job_result, file_name_temp) 
-                    print("Created %s succesfully!!!" %file_name_temp)
-                except:
-                    attempts += 1
-                    # print(attempts)
-                    job_response = requests.get(job_url, headers=header)
-                    time.sleep(3)
-                    pass 
-        else:
-            print("Was not able to connect to WAPOR server")
+    
+        if not os.path.exists(file_name_temp):   
+            
+            # Create payload file
+            payload = Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure)
+    
+            # Collect the date by using the payload file
+            response = requests.post(url, data=json.dumps(payload), headers=header)
+            response.raise_for_status()  
+            
+            response_json = response.json()
+            result = response_json['response']
+            
+            job_url = result['links'][0]['href']
+            
+            # output filename
+            print("Try to create %s" %file_name_temp)
+            
+            time.sleep(3)   
+            job_response = requests.get(job_url, headers=header)
+            time.sleep(3)
+            if job_response.status_code == 200:
+                attempts = 1
+                while (not os.path.exists(file_name_temp) and attempts < 20):
+                    try:                   
+                        job_result = job_response.json()['response']['output']['downloadUrl']
+                        urllib.request.urlretrieve(job_result, file_name_temp) 
+                        print("Created %s succesfully!!!" %file_name_temp)
+                    except:
+                        attempts += 1
+                        if attempts > 2:
+                            print(attempts)
+                        job_response = requests.get(job_url, headers=header)
+                        time.sleep(3)
+                        pass 
+            else:
+                print("Was not able to connect to WAPOR server")
                 
     return()
 
