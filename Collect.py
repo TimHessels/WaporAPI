@@ -63,6 +63,12 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
     if not os.path.exists(output_folder_para):
         os.makedirs(output_folder_para)
     
+    if Parameter.split("_")[0] == "L1":
+        latlim[0] = latlim[0] - 0.1
+        latlim[1] = latlim[1] + 0.1
+        lonlim[0] = lonlim[0] - 0.1
+        lonlim[1] = lonlim[1] + 0.1
+        
     # Loop over the dates
     for Date_end in Dates_end:
         
@@ -101,38 +107,45 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
             
             # Create payload file
             payload = Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure)
-    
-            # Collect the date by using the payload file
-            response = requests.post(url, data=json.dumps(payload), headers=header)
-            response.raise_for_status()  
+            success = 0
             
-            response_json = response.json()
-            result = response_json['response']
-            
-            job_url = result['links'][0]['href']
-            
-            # output filename
-            print("Try to create %s" %file_name_temp)
-            
-            time.sleep(3)   
-            job_response = requests.get(job_url, headers=header)
-            time.sleep(3)
-            if job_response.status_code == 200:
-                attempts = 1
-                while (not os.path.exists(file_name_temp) and attempts < 20):
-                    try:                   
-                        job_result = job_response.json()['response']['output']['downloadUrl']
-                        urllib.request.urlretrieve(job_result, file_name_temp) 
-                        print("Created %s succesfully!!!" %file_name_temp)
-                    except:
-                        attempts += 1
-                        if attempts > 2:
-                            print(attempts)
-                        job_response = requests.get(job_url, headers=header)
-                        time.sleep(3)
-                        pass 
-            else:
-                print("Was not able to connect to WAPOR server")
+            while success == 1:
+                
+                try:
+                     # Collect the date by using the payload file
+                    response = requests.post(url, data=json.dumps(payload), headers=header)
+                    response.raise_for_status()       
+                    
+                    response_json = response.json()
+                    result = response_json['response']
+                    
+                    job_url = result['links'][0]['href']
+                    
+                    # output filename
+                    print("Try to create %s" %file_name_temp)
+                    
+                    time.sleep(3)   
+                    job_response = requests.get(job_url, headers=header)
+                    time.sleep(3)
+                    if job_response.status_code == 200:
+                        attempts = 1
+                        while (not os.path.exists(file_name_temp) and attempts < 20):
+                            try:                   
+                                job_result = job_response.json()['response']['output']['downloadUrl']
+                                urllib.request.urlretrieve(job_result, file_name_temp) 
+                                print("Created %s succesfully!!!" %file_name_temp)
+                                success = 1
+                            except:
+                                attempts += 1
+                                if attempts > 2:
+                                    print(attempts)
+                                job_response = requests.get(job_url, headers=header)
+                                time.sleep(3)
+                                pass 
+                    else:
+                        print("Was not able to connect to WAPOR server")
+                except:
+                    continue
                 
     return()
 
