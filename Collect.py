@@ -10,10 +10,12 @@ import pandas as pd
 import os
 import urllib
 import datetime
+from pyproj import Proj, transform
 
-def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Parameter, Version = "2"):
+def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Parameter, Area = None, Version = "2"):
     
     time_steps = Parameter.split("_")[-1]
+    level = Parameter.split("_")[0]
     
     # Find the time frequency of the parameter
     if time_steps == "A":
@@ -22,6 +24,12 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
         freq = "MS"    
     if time_steps == "D":
         freq = "MS"    
+    
+    # Find LEVEL type
+    if level == "L3":
+        Parameter_first_part = "_".join(Parameter.split("_")[0:-1])
+        Parameter = "_".join([Parameter_first_part, "{AREA}", Parameter.split("_")[-1]])
+        Version = "1" # LEVEL 3 is only available in Version 1 dataset
     
     # Define dates
     Dates = pd.date_range(Startdate, Enddate, freq = freq)
@@ -41,7 +49,7 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
     
     # Define server         
     url = 'https://io.apps.fao.org/gismgr/api/v1/query'
-    
+           
     # Login into WAPOR
     sign_in= 'https://io.apps.fao.org/gismgr/api/v1/iam/sign-in'
     resp_vp=requests.post(sign_in,headers={'X-GISMGR-API-KEY':auth_token})
@@ -59,7 +67,7 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
     dimension = VariablesInfo.dimensions[Parameter]
     version = VariablesInfo.versions[Version]
 
-    output_folder_para =  os.path.join(output_folder, Parameter) 
+    output_folder_para =  os.path.join(output_folder, Parameter.format(AREA = Area)) 
     if not os.path.exists(output_folder_para):
         os.makedirs(output_folder_para)
     
@@ -68,10 +76,26 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
         latlim[1] = latlim[1] + 0.1
         lonlim[0] = lonlim[0] - 0.1
         lonlim[1] = lonlim[1] + 0.1
+      
+    if level == "L3":     
+        Projection = LEVEL3.Projection[Area]
+        inProj = Proj(init='epsg:4326')
+        outProj = Proj(init='epsg:%d' %Projection)
+        Projection = Projection
+    
+        lonlim[0], latlim[1] = transform(inProj, outProj, lonlim[0], latlim[1])
+        lonlim[1], latlim[0] = transform(inProj, outProj, lonlim[1], latlim[0])        
+        
+    else:
+        Projection = 4326
+        
+    if level == "L3":
+        Parameter = Parameter.format(AREA = Area)
         
     # Loop over the dates
     for Date_end in Dates_end:
         
+    
         # Set the required time period
         if time_steps == "D":
             Start_day_payload = Date_end.day
@@ -106,10 +130,11 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
         if not os.path.exists(file_name_temp):   
             
             # Create payload file
-            payload = Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure)
+            payload = Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure, Projection)
             success = 0
+            no_succes = 0    
             
-            while success == 1:
+            while success == 0 and no_succes<10:
                 
                 try:
                      # Collect the date by using the payload file
@@ -124,9 +149,9 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
                     # output filename
                     print("Try to create %s" %file_name_temp)
                     
-                    time.sleep(3)   
+                    time.sleep(1)   
                     job_response = requests.get(job_url, headers=header)
-                    time.sleep(3)
+                    time.sleep(1)
                     if job_response.status_code == 200:
                         attempts = 1
                         while (not os.path.exists(file_name_temp) and attempts < 20):
@@ -140,17 +165,19 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
                                 if attempts > 2:
                                     print(attempts)
                                 job_response = requests.get(job_url, headers=header)
-                                time.sleep(3)
+                                time.sleep(1)
                                 pass 
                     else:
                         print("Was not able to connect to WAPOR server")
                 except:
-                    continue
-                
+                    success = 0
+                    no_succes +=1
+                    if no_succes == 10:
+                        print("already tried 10 times, and no connection with server. Please run code again")
     return()
 
 
-def Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure):
+def Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload, End_month_payload, End_day_payload, latlim, lonlim, version, dimension, measure, Projection):
     
     payload = {
       "type": "CropRaster",
@@ -179,7 +206,7 @@ def Create_Payload_JSON(Parameter, Date_end, Start_day_payload, End_year_payload
           measure
         ],
         "shape": {
-          "crs": "EPSG:4326",
+          "crs": "EPSG:%d" %Projection,
           "type": "Polygon",
           "coordinates": [
             [
@@ -256,7 +283,20 @@ class VariablesInfo:
              'L2_LCC_A': 'Land Cover Classification',
               #'L2_PHE_S': 'Phenology (Seasonal)',
              'L2_QUAL_NDVI_D': 'Quality of Normalized Difference Vegetation Index (Dekadal)',
-             'L2_QUAL_LST_D': 'Quality Land Surface Temperature (Dekadal)'}
+             'L2_QUAL_LST_D': 'Quality Land Surface Temperature (Dekadal)',
+             'L3_AETI_{AREA}_A': 'Actual EvapoTranspiration and Interception (Annual)',
+             'L3_AETI_{AREA}_M': 'Actual EvapoTranspiration and Interception (Monthly)',
+             'L3_AETI_{AREA}_D': 'Actual EvapoTranspiration and Interception (Dekadal)',
+             'L3_T_{AREA}_A': 'Transpiration (Annual)',
+             'L3_E_{AREA}_A': 'Evaporation (Annual)',
+             'L3_I_{AREA}_A': 'Interception (Annual)',
+             'L3_T_{AREA}_D': 'Transpiration (Dekadal)',
+             'L3_E_{AREA}_D': 'Evaporation (Dekadal)',
+             'L3_I_{AREA}_D': 'Interception (Dekadal)',
+             'L3_NPP_{AREA}_D': 'Net Primary Production',
+             'L3_QUAL_NDVI_{AREA}_D': 'Quality of Normalized Difference Vegetation Index (Dekadal)',
+             'L3_QUAL_LST_{AREA}_D': 'Quality Land Surface Temperature (Dekadal)',
+             'L3_LCC_{AREA}_A': 'Land Cover Classification'}
     
     measures = {'L1_GBWP_A': 'WPR',
              'L1_NBWP_A': 'WPR',
@@ -297,7 +337,20 @@ class VariablesInfo:
              'L2_LCC_A': 'LCC',
               # 'L2_PHE_S': 'PHE',
              'L2_QUAL_NDVI_D': 'N_DAYS',
-             'L2_QUAL_LST_D': 'N_DAYS'}
+             'L2_QUAL_LST_D': 'N_DAYS',
+             'L3_AETI_{AREA}_A': 'WATER_MM',
+             'L3_AETI_{AREA}_M': 'WATER_MM',
+             'L3_AETI_{AREA}_D': 'WATER_MM',
+             'L3_T_{AREA}_A': 'WATER_MM',
+             'L3_E_{AREA}_A': 'WATER_MM',
+             'L3_I_{AREA}_A': 'WATER_MM',
+             'L3_T_{AREA}_D': 'WATER_MM',
+             'L3_E_{AREA}_D': 'WATER_MM',
+             'L3_I_{AREA}_D': 'WATER_MM',
+             'L3_NPP_{AREA}_D': 'NPP',
+             'L3_QUAL_NDVI_{AREA}_D': 'N_DAYS',
+             'L3_QUAL_LST_{AREA}_D': 'N_DAYS',
+             'L3_LCC_{AREA}_A': 'LCC'}
     
     dimensions = {'L1_GBWP_A': 'YEAR',
              'L1_NBWP_A': 'YEAR',
@@ -338,7 +391,40 @@ class VariablesInfo:
              'L2_LCC_A': 'YEAR',
               # 'L2_PHE_S': 'SEASON',
              'L2_QUAL_NDVI_D': 'DEKAD',
-             'L2_QUAL_LST_D': 'DEKAD'}
+             'L2_QUAL_LST_D': 'DEKAD',
+             'L3_AETI_{AREA}_A': 'YEAR',
+             'L3_AETI_{AREA}_M': 'MONTH',
+             'L3_AETI_{AREA}_D': 'DEKAD',
+             'L3_T_{AREA}_A': 'YEAR',
+             'L3_E_{AREA}_A': 'YEAR',
+             'L3_I_{AREA}_A': 'YEAR',
+             'L3_T_{AREA}_D': 'DEKAD',
+             'L3_E_{AREA}_D': 'DEKAD',
+             'L3_I_{AREA}_D': 'DEKAD',
+             'L3_NPP_{AREA}_D': 'DEKAD',
+             'L3_QUAL_NDVI_{AREA}_D': 'DEKAD',
+             'L3_QUAL_LST_{AREA}_D': 'DEKAD',
+             'L3_LCC_{AREA}_A': 'YEAR'}
 
     versions = {'1': 'WAPOR',
                 '2': 'WAPOR_2'}
+    
+class LEVEL3:
+    
+    """
+    This class contains the information of the areas in LEVEL 3
+    """
+    
+    Area = {'AWA': 'Awash, Ethiopia',
+             'BKA': 'Bekaa, Lebanon',
+             'KOG': 'Koga, Ethiopia',
+             'ODN': 'Office du Niger, Mali',
+             'ZAN': 'Zankalon, Egypt'}
+    
+    Projection = {'AWA': 32637,
+             'BKA': 32636,
+             'KOG': 32637,
+             'ODN': 32630,
+             'ZAN': 32636}
+    
+    
