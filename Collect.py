@@ -95,7 +95,6 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
     # Loop over the dates
     for Date_end in Dates_end:
         
-    
         # Set the required time period
         if time_steps == "D":
             Start_day_payload = Date_end.day
