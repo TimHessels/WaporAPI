@@ -161,18 +161,18 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
                                 success = 1
                             except:
                                 attempts += 1
-                                if attempts > 2:
-                                    print(attempts)
                                 job_response = requests.get(job_url, headers=header)
                                 time.sleep(1)
+                                if attempts == 20:
+                                   print("ERROR: Was not able to create output") 
                                 pass 
                     else:
-                        print("Was not able to connect to WAPOR server")
+                        print("ERROR: Was not able to connect to WAPOR server")
                 except:
                     success = 0
                     no_succes +=1
                     if no_succes == 10:
-                        print("already tried 10 times, and no connection with server. Please run code again")
+                        print("ERROR: already tried 10 times, and no connection with server. Please run code again")
     return()
 
 
