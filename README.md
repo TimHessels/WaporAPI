@@ -24,19 +24,19 @@ import WaporAPI
 
 WaporAPI.Collect.VariablesInfo.descriptions 
 
-# Examples LEVEL 1:
+# Example LEVEL 1:
 
 import WaporAPI
 
 WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L1_T_D")
 
-# Examples LEVEL 2:
+# Example LEVEL 2:
 
 import WaporAPI
 
 WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
 
-# Examples LEVEL 3:
+# Example LEVEL 3:
 
 import WaporAPI
 
