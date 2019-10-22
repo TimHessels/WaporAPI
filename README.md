@@ -1,7 +1,7 @@
 # WAPOR API
 
 # Description:
-This tool collects FAO's WAPOR data of LEVEL 1, LEVEL 2, and LEVEL 3 (excluding the seasonal paramters). The output will be tiff files and no conversions is 
+This tool collects FAO's WAPOR data of LEVEL 1, LEVEL 2, and LEVEL 3 (excluding the seasonal parameters). The output will be tiff files and no conversions is 
 preformed to the units. The output are in the same units as on the WAPOR Portal (https://wapor.apps.fao.org/home/1)
 
 The following input is required:
