@@ -22,24 +22,36 @@ To get a describtion of all the possible parameters type:
     
 import WaporAPI
 
-WaporAPI.Collect.VariablesInfo.descriptions 
+> WaporAPI.Collect.VariablesInfo.descriptions 
 
 # Example LEVEL 1:
 
-import WaporAPI
+>import WaporAPI
 
-WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L1_T_D")
+>WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L1_T_D")
 
 # Example LEVEL 2:
 
-import WaporAPI
+>import WaporAPI
 
-WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
+>WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L2_T_D")
 
 # Example LEVEL 3:
 
-import WaporAPI
+>import WaporAPI
 
-WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L3_T_D", Area = "AWA")
+>WaporAPI.Collect.WAPOR(r"G:\\...\\...", "2011-01-01", "2011-02-01", [8.2, 8.7], [39, 39.5], 'HERE_YOUR_PRIVATE_KEY', "L3_T_D", Area = "AWA")
 
+# Get a WaPOR API Key
 
+To create a Wapor Account go to FAO's WaPOR webpage: https://wapor.apps.fao.org/home/WAPOR_2/1. And push the Sign in button on the top right of the page. Create an account and sign in.
+
+Go back to the portal page and now the sign in button is replaced by the My WaPOR button. Click on this button, to open your profile.
+
+![](figs/wapor_site.png) 
+
+Select the "My Profile" option. And in the API Token section, you can generate an API Token by clicking on the "Generate API Token" button.
+
+![](figs/wapor_token.png) 
+
+Save this API-KEY somewhere on your computer, this token is needed later to run the WaporTranslator. This token is private and you should not share this token with others!
