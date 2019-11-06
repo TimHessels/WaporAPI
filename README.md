@@ -20,7 +20,7 @@ The following input is required:
     
 To get a describtion of all the possible parameters type:
     
-import WaporAPI
+> import WaporAPI
 
 > WaporAPI.Collect.VariablesInfo.descriptions 
 
