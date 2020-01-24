@@ -136,7 +136,7 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
             while success == 0 and no_succes<10:
                 
                 try:
-                     # Collect the date by using the payload file
+                    # Collect the date by using the payload file
                     response = requests.post(url, data=json.dumps(payload), headers=header)
                     response.raise_for_status()       
                     
@@ -148,24 +148,21 @@ def WAPOR(output_folder, Startdate, Enddate, latlim, lonlim, auth_token, Paramet
                     # output filename
                     print("Try to create %s" %file_name_temp)
                     
-                    time.sleep(1)   
+                    time.sleep(10)   
                     job_response = requests.get(job_url, headers=header)
-                    time.sleep(1)
                     if job_response.status_code == 200:
-                        attempts = 1
-                        while (not os.path.exists(file_name_temp) and attempts < 20):
-                            try:                   
-                                job_result = job_response.json()['response']['output']['downloadUrl']
-                                urllib.request.urlretrieve(job_result, file_name_temp) 
-                                print("Created %s succesfully!!!" %file_name_temp)
-                                success = 1
-                            except:
-                                attempts += 1
-                                job_response = requests.get(job_url, headers=header)
-                                time.sleep(1)
-                                if attempts == 20:
-                                   print("ERROR: Was not able to create output") 
-                                pass 
+                        while job_response.json()['response']['status'] == 'RUNNING':
+                            time.sleep(30)
+                            job_response = requests.get(job_url, headers=header)
+                        
+                        if job_response.json()['response']['status'] == 'COMPLETED':
+                            job_result = job_response.json()['response']['output']['downloadUrl']
+                            urllib.request.urlretrieve(job_result, file_name_temp) 
+                            print("Created %s succesfully!!!" %file_name_temp)
+                            success = 1
+                        else:
+                            print("ERROR: Was not able to create output")  
+
                     else:
                         print("ERROR: Was not able to connect to WAPOR server")
                 except:
