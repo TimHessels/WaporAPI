@@ -316,7 +316,7 @@ class VariablesInfo:
              'L1_PCP_D': 'WATER_MM',
              'L1_RET_E': 'WATER_MM',
              'L1_PCP_E': 'WATER_MM',
-             'L1_QUAL_NDVI_D': 'N_DAYS',
+             'L1_QUAL_NDVI_D': 'N_DEKADS',
              'L1_QUAL_LST_D': 'N_DAYS',
               # 'L2_GBWP_S': 'WPR',
              'L2_AETI_A': 'WATER_MM',
@@ -332,7 +332,7 @@ class VariablesInfo:
               # 'L2_TBP_S': 'LPR',
              'L2_LCC_A': 'LCC',
               # 'L2_PHE_S': 'PHE',
-             'L2_QUAL_NDVI_D': 'N_DAYS',
+             'L2_QUAL_NDVI_D': 'N_DEKADS',
              'L2_QUAL_LST_D': 'N_DAYS',
              'L3_AETI_{AREA}_A': 'WATER_MM',
              'L3_AETI_{AREA}_M': 'WATER_MM',
@@ -344,7 +344,7 @@ class VariablesInfo:
              'L3_E_{AREA}_D': 'WATER_MM',
              'L3_I_{AREA}_D': 'WATER_MM',
              'L3_NPP_{AREA}_D': 'NPP',
-             'L3_QUAL_NDVI_{AREA}_D': 'N_DAYS',
+             'L3_QUAL_NDVI_{AREA}_D': 'N_DEKADS',
              'L3_QUAL_LST_{AREA}_D': 'N_DAYS',
              'L3_LCC_{AREA}_A': 'LCC'}
     
